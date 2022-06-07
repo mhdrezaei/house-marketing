@@ -1,5 +1,6 @@
 import {BrowserRouter as Router , Routes , Route} from 'react-router-dom';
 import './App.css';
+import Navbar from './componnets/Navbar';
 import Explore from './pages/Explore';
 import ForgotPassword from './pages/ForgotPassword';
 import Offers from './pages/Offers';
@@ -19,6 +20,7 @@ function App() {
         <Route path='/sign-out' element={<SignOut />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
       </Routes>
+      <Navbar />
    </Router>
     </>
   );
