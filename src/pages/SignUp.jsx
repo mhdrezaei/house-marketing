@@ -2,14 +2,18 @@ import { useState } from 'react';
 import { Link ,useNavigate } from 'react-router-dom';
 import {ReactComponent as ArrowRight} from '../assets/svg/keyboardArrowRightIcon.svg';
 import {ReactComponent as VisibilityIcon} from '../assets/svg/visibilityIcon.svg';
+import { getAuth, createUserWithEmailAndPassword , updateProfile } from "firebase/auth";
+import {db} from '../firebase.config'
+import {doc , setDoc , serverTimestamp} from 'firebase/firestore';
 
-function SignIn() {
+function SignUp() {
   const [showPassword , setShowPassword] = useState(false);
   const [formData , setFormData] = useState({
+    name : '',
     email : '',
     password : ''
   });
-  const {email , password} = formData;
+  const {name ,email , password} = formData;
   const navigate = useNavigate();
 
   const onChange = (e) => {
@@ -20,13 +24,52 @@ function SignIn() {
       }
     })
   }
+
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const auth = getAuth();
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)  
+      const user = userCredential.user;
+
+      updateProfile(auth.currentUser,{
+        displayName : name
+      })
+
+      const formDataCopy = {...formData}
+      delete formDataCopy.password
+      formData.timestamp = serverTimestamp();
+      await setDoc(doc(db , 'users' , user.uid), formDataCopy);
+
+      navigate('/')
+
+    } catch (error) {
+      console.log(error)
+    }
+    
+
+
+  }
+
+
+
+
   return (
     <>
       <div className='pageContainer'>
         <header>
-          <p className='pageHeader'>Wellcome back!</p>
+          <p className='pageHeader'>Register Form!</p>
         </header>
-        <form>
+        <form onSubmit={onSubmit} >
+        <input 
+          type='text'
+           className='nameInput'
+           id='name'
+          placeholder='Name' 
+          value={name}
+            onChange={onChange}
+          />
           <input 
           type='email'
            className='emailInput'
@@ -35,6 +78,7 @@ function SignIn() {
           value={email}
             onChange={onChange}
           />
+
           <input 
           type={showPassword ? 'text' : 'password'} 
           className='passwordInput'
@@ -50,13 +94,8 @@ function SignIn() {
            alt='show password'
            onClick={()=>{setShowPassword(!showPassword)}} />
 
-          <Link 
-          to='/forgot-password' 
-          className='forgotPasswordLink'
-           >Forget your password?</Link>
-
            <div className='signInBar'>
-             <p className='signInText'> Sign in</p>
+             <p className='signInText'> Sign up</p>
              <button className='signInButton'> 
              <ArrowRight fill='#fff' width='34px' height='34px'/>
              </button>
@@ -64,10 +103,12 @@ function SignIn() {
            
         </form>
 
-        <Link to='/sign-up' className='registerLink'>Sign Up Instead</Link>
+        <Link 
+        to='/sign-up' 
+        className='registerLink'>Sign in Instead</Link>
       </div>
     </>
   )
 }
 
-export default SignIn
+export default SignUp
