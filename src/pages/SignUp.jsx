@@ -39,7 +39,7 @@ function SignUp() {
 
       const formDataCopy = {...formData}
       delete formDataCopy.password
-      formData.timestamp = serverTimestamp();
+      formDataCopy.timestamp = serverTimestamp();
       await setDoc(doc(db , 'users' , user.uid), formDataCopy);
 
       navigate('/')
