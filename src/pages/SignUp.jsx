@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { Link ,useNavigate } from 'react-router-dom';
 import {ReactComponent as ArrowRight} from '../assets/svg/keyboardArrowRightIcon.svg';
 import {ReactComponent as VisibilityIcon} from '../assets/svg/visibilityIcon.svg';
@@ -43,9 +44,10 @@ function SignUp() {
       await setDoc(doc(db , 'users' , user.uid), formDataCopy);
 
       navigate('/')
+      toast.success('Registration done Successfuly!')
 
     } catch (error) {
-      console.log(error)
+      toast.error('somthing went wrong!')
     }
     
 
@@ -104,7 +106,7 @@ function SignUp() {
         </form>
 
         <Link 
-        to='/sign-up' 
+        to='/sign-in' 
         className='registerLink'>Sign in Instead</Link>
       </div>
     </>
